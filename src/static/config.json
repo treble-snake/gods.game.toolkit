@@ -1,0 +1,55 @@
+{
+  "loot": {
+    "items": {
+      "list": [
+        {
+          "name": "Отмычка",
+          "value": 10,
+          "chance": 50
+        },
+        {
+          "name": "Лук",
+          "value": 200,
+          "change": 40
+        },
+        {
+          "name": "Супер-палка",
+          "value": 500,
+          "chance": 5,
+          "unique": true
+        },
+        {
+          "name": "Супер-Шапка",
+          "value": 500,
+          "chance": 5,
+          "unique": true
+        }
+      ]
+    },
+    "chests": {
+      "baseMimicChance": 0.1,
+      "list": [
+        {
+          "name": "Малый сундук",
+          "value": 250,
+          "capacity": 3
+        },
+        {
+          "name": "Большой сундук",
+          "value": 500,
+          "capacity": 5
+        }
+      ]
+    },
+    "mobs": {
+      "list": [
+        {
+          "name": "Трупачок",
+          "emptyChance": 0.5,
+          "itemChance": 0.125,
+          "gold": 10
+        }
+      ]
+    }
+  }
+}

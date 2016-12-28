@@ -1,0 +1,55 @@
+.input-bar {
+
+  .panel-footer .btn {
+    margin-right: 10px;
+  }
+
+  .panel-body {
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+
+    .controls-group {
+      flex: 1 0 70%;
+      padding: 10px 5px 5px 10px;
+
+      &:last-child {
+        flex: 0 0 30%;
+        border-left: 1px solid #ccc;
+      }
+
+      .title {
+        height: 20px;
+        font-size: .9em;
+        font-weight: bold;
+      }
+
+      .controls-container {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: space-around;
+        font-size: .8em;
+
+        .control {
+          flex: 1 1;
+          border: 1px solid #ccc;
+          padding: 10px;
+          border-radius: 5px;
+          display: flex;
+          flex-wrap: nowrap;
+          align-items: center;
+          justify-content: space-between;
+          margin: 0 5px 5px 0;
+
+          .name {
+            padding: 0 10px;
+            text-align: center;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+
+}

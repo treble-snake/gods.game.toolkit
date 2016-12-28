@@ -1,0 +1,9 @@
+{
+  "generator-react-webpack": {
+    "appName": "gods-loot",
+    "style": "less",
+    "cssmodules": false,
+    "postcss": false,
+    "generatedWithVersion": 4
+  }
+}
