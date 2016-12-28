@@ -6,8 +6,9 @@ class OutputBar extends React.Component {
   render() {
     let chestElements = this.props.chestList
       .map((item, i) => <Chest key={i} index={i} chest={item}
-                               update={() => this.props.updateChest(i)}
-                               open={() => this.props.openChest(i)} />);
+                               open={() => this.props.openChest(i)}
+                               kill={() => this.props.killChest(i)}
+      />);
 
     return (
       <div className="output-bar">
@@ -28,7 +29,7 @@ OutputBar.displayName = 'OutputBar';
 OutputBar.propTypes = {
   chestList: PropTypes.array.isRequired,
   openChest: PropTypes.func.isRequired,
-  updateChest: PropTypes.func.isRequired
+  killChest: PropTypes.func.isRequired
 };
 OutputBar.defaultProps = {};
 

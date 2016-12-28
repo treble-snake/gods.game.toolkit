@@ -1,97 +1,128 @@
 import Config from './LootConfig';
 import ChestModel from '../model/ChestModel';
-
-const ITEM_GENERATORS = {
-  [Config.LOOT_TYPES.LOCKPICK]: () => 'Отмычка',
-  [Config.LOOT_TYPES.EXPENDABLE]: () => getExpendable(),
-  [Config.LOOT_TYPES.WEAPON]: () => getWeapon(),
-  [Config.LOOT_TYPES.ARMOR]: () => getArmor()
-};
-
+import Option from '../model/ChanceOptionModel';
+/**
+ *
+ * @param items - array of items
+ * @returns {*}
+ */
 function chooseOne(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
+/**
+ *
+ * @param options - array of callbacks with chances
+ * @returns {*}
+ */
 function takeChance(options) {
   let roll = Math.random();
   let result = options[options.length - 1];
   let chance = 0;
   options = options.slice(0, -1);
 
-  for(let i in options) {
+  for (let i in options) {
     chance += options[i].chance;
-    if(roll < chance)
+    if (roll < chance)
       return options[i].callback();
   }
 
   return result.callback();
 }
 
-function getExpendable() {
-  return chooseOne(Config.EXPENDABLES);
+function isChange(chance) {
+  return Math.random() < chance;
 }
 
-function getWeapon() {
-  if (Math.ceil(Math.random() * 100) <= 90) {
-    return [chooseOne(Config.WEAPON_MATERIAL),
-      chooseOne(Config.WEAPON_TYPE).toLowerCase()].join(' ')
-  } else {
-    return chooseOne(Config.ARTIFACT_WEAPON);
-  }
+function getGold(value) {
+  return `${value} золотых`;
 }
 
-function getArmor() {
-  return chooseOne(Config.ARMOR_LIST);
-
+function getItem(itemsList) {
+  let itemsOptions = itemsList.map(item =>
+    new Option(item.chance, () => item));
+  var item = takeChance(itemsOptions);
+  return composeItemName(item);
 }
 
-function getItem() {
-  let type = chooseOne(Config.TYPES);
-  return ITEM_GENERATORS[type]();
+function composeItemName(item) {
+  return `${item.name} (цена: ${item.value})`;
 }
 
-function generateItems() {
-  let qty = chooseOne(Config.QTYS);
-  let items = [];
-  for (let i = 0; i < qty; i++) {
-    items.push(getItem());
-  }
-  return items;
-}
+function generateItems(maxQty, maxValue, itemsList) {
+  let itemsOptions = itemsList.map(item =>
+    new Option(item.chance, () => item));
 
-function generateGold() {
-  var gold = Math.ceil(Math.random() * 200);
-  var round = Math.round(gold / 10) * 10 + 10;
-  return `${round} золотых`;
-}
+  let result = [];
+  let rawItems = [];
+  let items = {};
+  let value = 0;
+  let hasUnique = false;
 
-function generateChest() {
-  var items = generateItems();
-  items.push(generateGold());
-  return new ChestModel(chooseOne(Config.CHEST_LABELS), items);
-}
+  for (let i = 0; i < maxQty; i++) {
+    let item;
+    do {
+      item = takeChance(itemsOptions);
+    } while (hasUnique && item.unique);
 
-
-
-function generateMobLoot(config) {
-  let item = takeChance([
-    {
-      callback: () => 'Нихрена',
-      chance: config.emptyChance
-    },
-    {
-      callback: getItem,
-      chance: config.itemChance
-    },
-    {
-      callback: () => `${config.gold} золота`
+    if(item.unique) {
+      hasUnique = true;
     }
+
+    rawItems.push(item);
+    name = composeItemName(item);
+    if (items.hasOwnProperty(name)) {
+      items[name]++;
+      continue;
+    }
+
+    items[name] = 1;
+    value += item.value;
+    if (value >= maxValue)
+      break;
+  }
+
+  for (let name in items) {
+    let entry = name;
+    let qty = items[name];
+    if (qty > 1)
+      entry = `${qty} x ${entry}`;
+
+    result.push(entry);
+  }
+
+  if (value < maxValue) {
+    let gold = 10 * Math.round((maxValue - value) / 10);
+    result.push(getGold(gold));
+  }
+
+  return {
+    textItems: result,
+    rawItems: rawItems
+  };
+}
+
+function generateChest(chestConfig, itemsList) {
+  var items = generateItems(chestConfig.capacity, chestConfig.value, itemsList);
+  var chest = new ChestModel(chestConfig.name,
+    chooseOne(Config.CHEST_LABELS), items.textItems);
+  chest.rawItems = items.rawItems;
+  if (isChange(chestConfig.mimicChance))
+    chest.makeMimic();
+
+  return chest;
+}
+
+function generateMobLoot(config, itemsList) {
+  let item = takeChance([
+    new Option(config.emptyChance, () => 'Нихрена'),
+    new Option(config.itemChance, () => getItem(itemsList)),
+    new Option(0, () => getGold(config.gold)),
   ]);
-  return new ChestModel(config.name, "Лежит и не шевелится", [item])
+  return new ChestModel(config.name, "Кровь, кишки, распидарасило", [item])
 }
 
 export default {
   getChest: generateChest,
-  getItems: generateItems,
   getMobLoot: generateMobLoot
 }

@@ -87,10 +87,11 @@ class WebpackBaseConfig {
         inline: true,
         port: 8000
       },
-      entry: [
-        './index.js',
-        'whatwg-fetch'
-      ],
+      entry: './index.js',
+      // entry: [
+      //   './index.js',
+      //   'whatwg-fetch'
+      // ],
       module: {
         rules: [
           {

@@ -8,14 +8,48 @@
     display: flex;
     justify-content: space-between;
     padding: 0;
+    flex-wrap: wrap;
 
     .controls-group {
-      flex: 1 0 70%;
       padding: 10px 5px 5px 10px;
 
-      &:last-child {
+      &.chests {
+        flex: 1 0 70%;
+      }
+
+      &.mobs {
         flex: 0 0 30%;
         border-left: 1px solid #ccc;
+      }
+
+      &.unique {
+        flex: 1 0 100%;
+        border-top: 1px solid #ccc;
+
+        .title {
+          cursor: pointer;
+        }
+
+        .entry {
+          padding: 5px 5px 5px 15px ;
+          user-select: none;
+          cursor: pointer;
+          font-size: .8em;
+          
+          &:hover {
+            background-color: #ddd;
+          }
+        }
+
+        .glyphicon-ok {
+          color: green;
+          vertical-align: text-top;
+        }
+
+        .glyphicon-remove {
+          color: red;
+          vertical-align: text-top;
+        }
       }
 
       .title {

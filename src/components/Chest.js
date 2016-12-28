@@ -11,26 +11,38 @@ class Chest extends React.Component {
     return <div className="chest-label">{text}</div>
   }
 
+  renderMimic() {
+    return this.renderLabel("Вас укусили за жопу!")
+  }
+
   render() {
     /**
      * @type {ChestModel}
      */
     let chest = this.props.chest;
     let chestContent = chest.opened ?
-      this.renderItems(chest.items) : this.renderLabel(chest.label);
+      (chest.isMimic && !chest.isDead ?
+        this.renderMimic() : this.renderItems(chest.items))
+      : this.renderLabel(chest.label);
 
-    let control = chest.opened ?
-      <button className="btn btn-warning reload" onClick={this.props.update}>
-        <span className="glyphicon glyphicon-repeat"/></button> :
-      <button className="btn btn-primary open" onClick={this.props.open}>
-        <span className="glyphicon glyphicon-eye-open"/></button>;
+    let control = null;
+    if (!chest.opened) {
+      control =
+        <button className="btn btn-primary open" onClick={this.props.open}>
+          <span className="glyphicon glyphicon-eye-open"/></button>;
+    } else if (chest.isMimic && !chest.isDead) {
+      control =
+        <button className="btn btn-danger reload" onClick={this.props.kill}>
+          <span className="glyphicon glyphicon-screenshot"/></button>;
+    }
 
     return (
       <div className="chest col-md-4 col-sm-6 col-xs-12">
         <div className="panel panel-info">
           <div className="panel-heading">
             {control}
-            <span className="chest-name">Сундук {this.props.index + 1}</span>
+            <span
+              className="chest-name">{chest.name} {this.props.index + 1}</span>
           </div>
           <div className="panel-body">
             {chestContent}
@@ -46,7 +58,7 @@ Chest.propTypes = {
   chest: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
   open: PropTypes.func.isRequired,
-  update: PropTypes.func.isRequired
+  kill: PropTypes.func.isRequired
 };
 Chest.defaultProps = {};
 
